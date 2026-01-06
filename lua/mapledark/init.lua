@@ -6,6 +6,11 @@ local M = {}
 local utils = require('mapledark.utils')
 local hl = utils.hl
 
+-- Default configuration
+M.config = {
+  transparent = false, -- Enable transparent background
+}
+
 -- Cache for colors and highlights
 local _cache = {
   colors = nil,
@@ -70,6 +75,9 @@ M.colors = setmetatable({}, {
 function M.setup(opts)
   opts = opts or {}
 
+  -- Merge user config with defaults
+  M.config = vim.tbl_deep_extend('force', M.config, opts)
+
   -- Check if already loaded and not forcing reload
   if _cache.highlights_loaded and not opts.force then
     return
@@ -87,32 +95,38 @@ function M.setup(opts)
 
   local c = get_colors()
 
+  -- Transparent background helper
+  local transparent = M.config.transparent
+  local bg_main = transparent and 'NONE' or c.bg_dark
+  local bg_sidebar = transparent and 'NONE' or c.bg
+  local bg_float = transparent and 'NONE' or c.bg_dark
+
   -- ============================================================================
   -- EDITOR UI
   -- ============================================================================
 
-  hl('Normal', { fg = c.fg, bg = c.bg_dark })
-  hl('NormalFloat', { fg = c.fg, bg = c.bg_dark })
-  hl('FloatBorder', { fg = c.border, bg = c.bg_dark })
-  hl('FloatTitle', { fg = c.blue, bg = c.bg_light, bold = true })
+  hl('Normal', { fg = c.fg, bg = bg_main })
+  hl('NormalFloat', { fg = c.fg, bg = bg_float })
+  hl('FloatBorder', { fg = c.border, bg = bg_float })
+  hl('FloatTitle', { fg = c.blue, bg = transparent and 'NONE' or c.bg_light, bold = true })
 
   hl('Cursor', { fg = c.bg, bg = c.fg })
   hl('lCursor', { fg = c.bg, bg = c.fg })
-  hl('CursorLine', { bg = c.bg_sel })
-  hl('CursorColumn', { bg = c.bg_sel })
-  hl('ColorColumn', { bg = c.bg_dark })
+  hl('CursorLine', { bg = transparent and 'NONE' or c.bg_sel })
+  hl('CursorColumn', { bg = transparent and 'NONE' or c.bg_sel })
+  hl('ColorColumn', { bg = transparent and 'NONE' or c.bg_dark })
 
-  hl('LineNr', { fg = c.linenr, bg = c.bg })
-  hl('CursorLineNr', { fg = c.fg_dark, bg = c.bg, bold = true })
-  hl('SignColumn', { bg = c.bg })
-  hl('FoldColumn', { fg = c.fg_dark, bg = c.bg })
-  hl('Folded', { fg = c.fg_dark, bg = c.bg_sel })
+  hl('LineNr', { fg = c.linenr, bg = bg_sidebar })
+  hl('CursorLineNr', { fg = c.fg_dark, bg = bg_sidebar, bold = true })
+  hl('SignColumn', { bg = bg_sidebar })
+  hl('FoldColumn', { fg = c.fg_dark, bg = bg_sidebar })
+  hl('Folded', { fg = c.fg_dark, bg = transparent and 'NONE' or c.bg_sel })
 
   -- Status line
-  hl('StatusLine', { fg = c.fg_dark })
+  hl('StatusLine', { fg = c.fg_dark, bg = bg_main })
   hl('StatusLineNC', { fg = c.bg, bg = c.fg_dark })
-  hl('VertSplit', { fg = c.border })
-  hl('WinSeparator', { fg = c.border })
+  hl('VertSplit', { fg = c.border, bg = bg_main })
+  hl('WinSeparator', { fg = c.border, bg = bg_main })
 
   -- Search and selection
   hl('Visual', { bg = c.bg_sel })
@@ -131,12 +145,12 @@ function M.setup(opts)
   hl('Title', { fg = c.blue, bold = true })
   hl('Directory', { fg = c.blue })
   hl('NonText', { fg = c.fg_dark })
-  hl('EndOfBuffer', { fg = c.bg })
+  hl('EndOfBuffer', { fg = transparent and c.fg_dark or c.bg })
   hl('SpecialKey', { fg = c.fg_dark })
   hl('Whitespace', { fg = c.bg_sel })
 
   -- Popup menu
-  hl('Pmenu', { fg = c.fg, bg = c.bg_light })
+  hl('Pmenu', { fg = c.fg, bg = transparent and 'NONE' or c.bg_light })
   hl('PmenuSel', { fg = c.bg, bg = c.blue, bold = true })
   hl('PmenuKind', { fg = c.yellow, bg = c.bg_light })
   hl('PmenuKindSel', { fg = c.bg, bg = c.blue, bold = true })  -- Darker fg for AA compliance
@@ -146,9 +160,9 @@ function M.setup(opts)
   hl('PmenuThumb', { fg = c.border, bg = c.bg_light })  -- Fixed for AA compliance
 
   -- Tabs
-  hl('TabLine', { fg = c.fg_dark, bg = c.bg_sel })
-  hl('TabLineFill', { bg = c.bg })
-  hl('TabLineSel', { fg = c.green, bg = c.bg, bold = true })
+  hl('TabLine', { fg = c.fg_dark, bg = transparent and 'NONE' or c.bg_sel })
+  hl('TabLineFill', { bg = bg_sidebar })
+  hl('TabLineSel', { fg = c.green, bg = bg_sidebar, bold = true })
 
   -- Diffs
   hl('DiffAdd', { fg = c.green, bg = c.bg_sel })
@@ -209,8 +223,8 @@ function M.setup(opts)
 
   hl('Underlined', { fg = c.blue, underline = true })
   hl('Ignore', { fg = c.bg })
-  hl('Error', { fg = c.red_br, bg = c.bg_dark, bold = true })
-  hl('Todo', { fg = c.yellow, bg = c.bg_sel, bold = true })
+  hl('Error', { fg = c.red_br, bg = bg_main, bold = true })
+  hl('Todo', { fg = c.yellow, bg = transparent and 'NONE' or c.bg_sel, bold = true })
 
   -- ============================================================================
   -- DIAGNOSTICS
@@ -222,11 +236,11 @@ function M.setup(opts)
   hl('DiagnosticHint', { fg = c.cyan })
   hl('DiagnosticOk', { fg = c.green })
 
-  hl('DiagnosticSignError', { fg = c.red, bg = c.bg })
-  hl('DiagnosticSignWarn', { fg = c.orange, bg = c.bg })
-  hl('DiagnosticSignInfo', { fg = c.blue, bg = c.bg })
-  hl('DiagnosticSignHint', { fg = c.cyan, bg = c.bg })
-  hl('DiagnosticSignOk', { fg = c.green, bg = c.bg })
+  hl('DiagnosticSignError', { fg = c.red, bg = bg_sidebar })
+  hl('DiagnosticSignWarn', { fg = c.orange, bg = bg_sidebar })
+  hl('DiagnosticSignInfo', { fg = c.blue, bg = bg_sidebar })
+  hl('DiagnosticSignHint', { fg = c.cyan, bg = bg_sidebar })
+  hl('DiagnosticSignOk', { fg = c.green, bg = bg_sidebar })
 
   hl('DiagnosticVirtualTextError', { fg = c.red })
   hl('DiagnosticVirtualTextWarn', { fg = c.orange })
@@ -238,10 +252,10 @@ function M.setup(opts)
   hl('DiagnosticUnderlineInfo', { sp = c.blue, underline = true })
   hl('DiagnosticUnderlineHint', { sp = c.cyan, underline = true })
 
-  hl('DiagnosticFloatingError', { fg = c.red, bg = c.bg_light })
-  hl('DiagnosticFloatingWarn', { fg = c.orange, bg = c.bg_light })
-  hl('DiagnosticFloatingInfo', { fg = c.blue, bg = c.bg_light })
-  hl('DiagnosticFloatingHint', { fg = c.cyan, bg = c.bg_light })
+  hl('DiagnosticFloatingError', { fg = c.red, bg = bg_float })
+  hl('DiagnosticFloatingWarn', { fg = c.orange, bg = bg_float })
+  hl('DiagnosticFloatingInfo', { fg = c.blue, bg = bg_float })
+  hl('DiagnosticFloatingHint', { fg = c.cyan, bg = bg_float })
 
   -- ============================================================================
   -- LSP
@@ -255,7 +269,7 @@ function M.setup(opts)
   hl('LspSignatureActiveParameter', { fg = c.yellow, bold = true })
 
   -- LSP Semantic tokens
-  hl('LspInlayHint', { fg = c.fg_dark, bg = c.bg, italic = true })
+  hl('LspInlayHint', { fg = c.fg_dark, bg = bg_sidebar, italic = true })
   hl('@lsp.type.namespace', { fg = c.cyan })
   hl('@lsp.type.type', { fg = c.yellow })
   hl('@lsp.type.class', { fg = c.yellow })

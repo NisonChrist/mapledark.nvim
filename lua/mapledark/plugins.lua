@@ -5,19 +5,30 @@ local M = {}
 local utils = require('mapledark.utils')
 local hl = utils.hl
 
+-- Get transparent config from main module
+local function get_transparent()
+  local ok, mapledark = pcall(require, 'mapledark')
+  if ok and mapledark.config then
+    return mapledark.config.transparent
+  end
+  return false
+end
+
 -- Individual plugin loaders (can be called on-demand)
 M.loaders = {}
 
 -- Blink.cmp completion plugin
 M.loaders.blinkcmp = function(c)
-  hl('BlinkCmpMenu', { fg = c.fg, bg = c.bg_light })
-  hl('BlinkCmpMenuBorder', { fg = c.border, bg = c.bg_light })
+  local transparent = get_transparent()
+  local bg_popup = transparent and 'NONE' or c.bg_light
+  hl('BlinkCmpMenu', { fg = c.fg, bg = bg_popup })
+  hl('BlinkCmpMenuBorder', { fg = c.border, bg = bg_popup })
   hl('BlinkCmpMenuSelection', { fg = c.bg, bg = c.blue, bold = true })
-  hl('BlinkCmpDoc', { fg = c.fg, bg = c.bg_light })
-  hl('BlinkCmpDocBorder', { fg = c.border, bg = c.bg_light })
-  hl('BlinkCmpDocSeparator', { fg = c.border, bg = c.bg_light })
-  hl('BlinkCmpSignatureHelp', { fg = c.fg, bg = c.bg_light })
-  hl('BlinkCmpSignatureHelpBorder', { fg = c.border, bg = c.bg_light })
+  hl('BlinkCmpDoc', { fg = c.fg, bg = bg_popup })
+  hl('BlinkCmpDocBorder', { fg = c.border, bg = bg_popup })
+  hl('BlinkCmpDocSeparator', { fg = c.border, bg = bg_popup })
+  hl('BlinkCmpSignatureHelp', { fg = c.fg, bg = bg_popup })
+  hl('BlinkCmpSignatureHelpBorder', { fg = c.border, bg = bg_popup })
   hl('BlinkCmpSignatureHelpActiveParameter', { fg = c.yellow, bold = true })
   hl('BlinkCmpKind', { fg = c.cyan })
   hl('BlinkCmpKindText', { fg = c.fg })
@@ -94,23 +105,25 @@ end
 
 -- Fzf-lua fuzzy finder
 M.loaders.fzflua = function(c)
+  local transparent = get_transparent()
+  local bg_main = transparent and 'NONE' or c.bg_dark
   -- Use same background as main Neovim window
-  hl('FzfLuaNormal', { fg = c.fg, bg = c.bg_dark })
-  hl('FzfLuaBorder', { fg = c.border, bg = c.bg_dark })
-  hl('FzfLuaTitle', { fg = c.blue, bg = c.bg_dark, bold = true })
-  hl('FzfLuaPreviewNormal', { fg = c.fg, bg = c.bg_dark })
-  hl('FzfLuaPreviewBorder', { fg = c.border, bg = c.bg_dark })
-  hl('FzfLuaPreviewTitle', { fg = c.cyan, bg = c.bg_dark, bold = true })
+  hl('FzfLuaNormal', { fg = c.fg, bg = bg_main })
+  hl('FzfLuaBorder', { fg = c.border, bg = bg_main })
+  hl('FzfLuaTitle', { fg = c.blue, bg = bg_main, bold = true })
+  hl('FzfLuaPreviewNormal', { fg = c.fg, bg = bg_main })
+  hl('FzfLuaPreviewBorder', { fg = c.border, bg = bg_main })
+  hl('FzfLuaPreviewTitle', { fg = c.cyan, bg = bg_main, bold = true })
   hl('FzfLuaCursor', { fg = c.bg, bg = c.blue })  -- Darker fg for AA compliance
-  hl('FzfLuaCursorLine', { bg = c.bg_sel })
-  hl('FzfLuaCursorLineNr', { fg = c.blue, bg = c.bg_sel, bold = true })
+  hl('FzfLuaCursorLine', { bg = transparent and 'NONE' or c.bg_sel })
+  hl('FzfLuaCursorLineNr', { fg = c.blue, bg = transparent and 'NONE' or c.bg_sel, bold = true })
   hl('FzfLuaSearch', { fg = c.bg, bg = c.yellow, bold = true })  -- Darker fg for AA compliance
-  hl('FzfLuaScrollBorderEmpty', { fg = c.bg_dark, bg = c.bg_dark })
-  hl('FzfLuaScrollBorderFull', { fg = c.border, bg = c.bg_dark })
-  hl('FzfLuaScrollFloatEmpty', { fg = c.bg_dark, bg = c.bg_dark })
-  hl('FzfLuaScrollFloatFull', { fg = c.border, bg = c.bg_dark })
-  hl('FzfLuaHelpNormal', { fg = c.fg, bg = c.bg_dark })
-  hl('FzfLuaHelpBorder', { fg = c.border, bg = c.bg_dark })
+  hl('FzfLuaScrollBorderEmpty', { fg = bg_main, bg = bg_main })
+  hl('FzfLuaScrollBorderFull', { fg = c.border, bg = bg_main })
+  hl('FzfLuaScrollFloatEmpty', { fg = bg_main, bg = bg_main })
+  hl('FzfLuaScrollFloatFull', { fg = c.border, bg = bg_main })
+  hl('FzfLuaHelpNormal', { fg = c.fg, bg = bg_main })
+  hl('FzfLuaHelpBorder', { fg = c.border, bg = bg_main })
   hl('FzfLuaFilePart', { fg = c.fg })
   hl('FzfLuaPathColNr', { fg = c.fg_dark })
   hl('FzfLuaPathLineNr', { fg = c.cyan })
@@ -143,10 +156,13 @@ end
 
 -- Lazy.nvim plugin manager
 M.loaders.lazy = function(c)
-  hl('LazyNormal', { fg = c.fg, bg = c.bg })
+  local transparent = get_transparent()
+  local bg_sidebar = transparent and 'NONE' or c.bg
+  local bg_popup = transparent and 'NONE' or c.bg_light
+  hl('LazyNormal', { fg = c.fg, bg = bg_sidebar })
   hl('LazyProgressDone', { fg = c.green, bold = true })
   hl('LazyProgressTodo', { fg = c.fg_dark })
-  hl('LazyButton', { fg = c.fg, bg = c.bg_light })
+  hl('LazyButton', { fg = c.fg, bg = bg_popup })
   hl('LazyButtonActive', { fg = c.bg, bg = c.blue, bold = true })
   hl('LazyH1', { fg = c.bg, bg = c.blue, bold = true })
   hl('LazyH2', { fg = c.blue, bold = true })
@@ -178,7 +194,9 @@ end
 
 -- Mason.nvim LSP installer
 M.loaders.mason = function(c)
-  hl('MasonNormal', { fg = c.fg, bg = c.bg })
+  local transparent = get_transparent()
+  local bg_sidebar = transparent and 'NONE' or c.bg
+  hl('MasonNormal', { fg = c.fg, bg = bg_sidebar })
   hl('MasonHeader', { fg = c.bg, bg = c.blue, bold = true })
   hl('MasonHeaderSecondary', { fg = c.bg, bg = c.cyan, bold = true })
   hl('MasonHighlight', { fg = c.blue, bold = true })
@@ -188,8 +206,8 @@ M.loaders.mason = function(c)
   hl('MasonHighlightBlockSecondary', { fg = c.bg, bg = c.cyan, bold = true })
   hl('MasonHighlightBlockBoldSecondary', { fg = c.bg, bg = c.cyan, bold = true })
   hl('MasonMuted', { fg = c.fg_dark, italic = true })
-  hl('MasonMutedBlock', { fg = c.fg_dark, bg = c.bg })
-  hl('MasonMutedBlockBold', { fg = c.fg_dark, bg = c.bg, bold = true })
+  hl('MasonMutedBlock', { fg = c.fg_dark, bg = bg_sidebar })
+  hl('MasonMutedBlockBold', { fg = c.fg_dark, bg = bg_sidebar, bold = true })
   hl('MasonError', { fg = c.red, bold = true })
   hl('MasonWarning', { fg = c.orange, bold = true })
   hl('MasonHeading', { fg = c.blue, bold = true })
@@ -208,6 +226,9 @@ end
 
 -- Telescope fuzzy finder (fallback)
 M.loaders.telescope = function(c)
+  local transparent = get_transparent()
+  local bg_main = transparent and 'NONE' or c.bg_dark
+  local bg_popup = transparent and 'NONE' or c.bg_light
   hl('TelescopeBorder', { fg = c.border })
   hl('TelescopePromptBorder', { fg = c.border })
   hl('TelescopeResultsBorder', { fg = c.border })
@@ -217,10 +238,10 @@ M.loaders.telescope = function(c)
   hl('TelescopeMultiSelection', { fg = c.green, bold = true })
   hl('TelescopeMatching', { fg = c.blue_br, bold = true })
   hl('TelescopePromptPrefix', { fg = c.magenta, bold = true })
-  hl('TelescopeNormal', { fg = c.fg, bg = c.bg_light })
-  hl('TelescopePromptNormal', { fg = c.fg, bg = c.bg_dark })
-  hl('TelescopeResultsNormal', { fg = c.fg, bg = c.bg_dark })
-  hl('TelescopePreviewNormal', { fg = c.fg, bg = c.bg_dark })
+  hl('TelescopeNormal', { fg = c.fg, bg = bg_popup })
+  hl('TelescopePromptNormal', { fg = c.fg, bg = bg_main })
+  hl('TelescopeResultsNormal', { fg = c.fg, bg = bg_main })
+  hl('TelescopePreviewNormal', { fg = c.fg, bg = bg_main })
   hl('TelescopeTitle', { fg = c.blue, bold = true })
   hl('TelescopePromptTitle', { fg = c.blue, bold = true })
   hl('TelescopeResultsTitle', { fg = c.cyan, bold = true })
@@ -229,22 +250,26 @@ end
 
 -- Which-key key binding hints
 M.loaders.whichkey = function(c)
+  local transparent = get_transparent()
+  local bg_popup = transparent and 'NONE' or c.bg_light
   hl('WhichKey', { fg = c.magenta, bold = true })
   hl('WhichKeyGroup', { fg = c.blue })
   hl('WhichKeyDesc', { fg = c.fg })
   hl('WhichKeySeparator', { fg = c.fg_dark })
-  hl('WhichKeyFloat', { fg = c.fg, bg = c.bg_light })
-  hl('WhichKeyBorder', { fg = c.border, bg = c.bg_light })
+  hl('WhichKeyFloat', { fg = c.fg, bg = bg_popup })
+  hl('WhichKeyBorder', { fg = c.border, bg = bg_popup })
   hl('WhichKeyValue', { fg = c.green })
 end
 
 -- Notify notification manager
 M.loaders.notify = function(c)
-  hl('NotifyERRORBorder', { fg = c.red, bg = c.bg_light })
-  hl('NotifyWARNBorder', { fg = c.orange, bg = c.bg_light })
-  hl('NotifyINFOBorder', { fg = c.blue, bg = c.bg_light })
-  hl('NotifyDEBUGBorder', { fg = c.cyan, bg = c.bg_light })
-  hl('NotifyTRACEBorder', { fg = c.magenta, bg = c.bg_light })
+  local transparent = get_transparent()
+  local bg_popup = transparent and 'NONE' or c.bg_light
+  hl('NotifyERRORBorder', { fg = c.red, bg = bg_popup })
+  hl('NotifyWARNBorder', { fg = c.orange, bg = bg_popup })
+  hl('NotifyINFOBorder', { fg = c.blue, bg = bg_popup })
+  hl('NotifyDEBUGBorder', { fg = c.cyan, bg = bg_popup })
+  hl('NotifyTRACEBorder', { fg = c.magenta, bg = bg_popup })
   hl('NotifyERRORIcon', { fg = c.red, bold = true })
   hl('NotifyWARNIcon', { fg = c.orange, bold = true })
   hl('NotifyINFOIcon', { fg = c.blue, bold = true })
@@ -276,13 +301,15 @@ end
 
 -- Noice.nvim UI replacement
 M.loaders.noice = function(c)
-  hl('NoiceCmdline', { fg = c.fg, bg = c.bg_light })
-  hl('NoiceCmdlineIcon', { fg = c.blue, bg = c.bg_light })
-  hl('NoiceCmdlinePrompt', { fg = c.magenta, bg = c.bg_light, bold = true })
-  hl('NoiceCmdlinePopup', { fg = c.fg, bg = c.bg_light })
-  hl('NoiceCmdlinePopupBorder', { fg = c.border, bg = c.bg_light })
-  hl('NoiceConfirm', { fg = c.fg, bg = c.bg_light })
-  hl('NoiceConfirmBorder', { fg = c.green, bg = c.bg_light })
+  local transparent = get_transparent()
+  local bg_popup = transparent and 'NONE' or c.bg_light
+  hl('NoiceCmdline', { fg = c.fg, bg = bg_popup })
+  hl('NoiceCmdlineIcon', { fg = c.blue, bg = bg_popup })
+  hl('NoiceCmdlinePrompt', { fg = c.magenta, bg = bg_popup, bold = true })
+  hl('NoiceCmdlinePopup', { fg = c.fg, bg = bg_popup })
+  hl('NoiceCmdlinePopupBorder', { fg = c.border, bg = bg_popup })
+  hl('NoiceConfirm', { fg = c.fg, bg = bg_popup })
+  hl('NoiceConfirmBorder', { fg = c.green, bg = bg_popup })
 end
 
 -- Main setup function - loads all or selected plugins

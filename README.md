@@ -105,6 +105,9 @@ vim.cmd.colorscheme('mapledark')
 ```lua
 -- Load with options
 require('mapledark').setup({
+  -- Enable transparent background
+  transparent = false,
+
   -- Disable plugin highlights for faster load times
   disable_plugin_highlights = false,
 
@@ -115,6 +118,18 @@ require('mapledark').setup({
   force = false,
 })
 ```
+
+### Transparent Background
+
+To enable transparent background (useful for terminal transparency):
+
+```lua
+require('mapledark').setup({
+  transparent = true,
+})
+```
+
+**Note:** For transparency to work, your terminal emulator must also support and have transparency enabled.
 
 ### On-Demand Plugin Loading
 
