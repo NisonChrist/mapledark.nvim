@@ -107,10 +107,12 @@ function M.setup(opts)
   local c = get_colors()
 
   -- Transparent background helper
+  -- Note: Popups/floats keep their background even in transparent mode for visibility
   local transparent = M.config.transparent
   local bg_main = transparent and 'NONE' or c.bg_dark
   local bg_sidebar = transparent and 'NONE' or c.bg
-  local bg_float = transparent and 'NONE' or c.bg_dark
+  local bg_float = c.bg_light  -- Always opaque for popups
+  local bg_popup = c.bg_light  -- Always opaque for menus
 
   -- ============================================================================
   -- EDITOR UI
@@ -119,7 +121,7 @@ function M.setup(opts)
   hl('Normal', { fg = c.fg, bg = bg_main })
   hl('NormalFloat', { fg = c.fg, bg = bg_float })
   hl('FloatBorder', { fg = c.border, bg = bg_float })
-  hl('FloatTitle', { fg = c.blue, bg = transparent and 'NONE' or c.bg_light, bold = true })
+  hl('FloatTitle', { fg = c.blue, bg = bg_float, bold = true })
 
   hl('Cursor', { fg = c.bg, bg = c.fg })
   hl('lCursor', { fg = c.bg, bg = c.fg })
@@ -161,7 +163,7 @@ function M.setup(opts)
   hl('Whitespace', { fg = c.bg_sel })
 
   -- Popup menu
-  hl('Pmenu', { fg = c.fg, bg = transparent and 'NONE' or c.bg_light })
+  hl('Pmenu', { fg = c.fg, bg = bg_popup })
   hl('PmenuSel', { fg = c.bg, bg = c.blue, bold = true })
   hl('PmenuKind', { fg = c.yellow, bg = c.bg_light })
   hl('PmenuKindSel', { fg = c.bg, bg = c.blue, bold = true })  -- Darker fg for AA compliance
