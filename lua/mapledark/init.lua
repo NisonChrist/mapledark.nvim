@@ -75,12 +75,23 @@ M.colors = setmetatable({}, {
 function M.setup(opts)
   opts = opts or {}
 
+  -- Store previous transparent setting to detect changes
+  local prev_transparent = M.config.transparent
+
   -- Merge user config with defaults
   M.config = vim.tbl_deep_extend('force', M.config, opts)
 
+  -- Force reload if transparent setting changed
+  local config_changed = prev_transparent ~= M.config.transparent
+
   -- Check if already loaded and not forcing reload
-  if _cache.highlights_loaded and not opts.force then
+  if _cache.highlights_loaded and not opts.force and not config_changed then
     return
+  end
+
+  -- Clear plugin cache when config changes
+  if config_changed then
+    _cache.plugins_loaded = {}
   end
 
   -- Reset colors
@@ -482,9 +493,11 @@ function M.reload()
   M.setup({ force = true })
 end
 
--- Load the colorscheme
+-- Load the colorscheme (called by colorscheme command)
+-- Forces reload to apply any config changes
 function M.load()
-  M.setup()
+  _cache.highlights_loaded = false
+  M.setup({ force = true })
 end
 
 return M

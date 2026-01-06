@@ -38,6 +38,24 @@ Inspired by the [VS Code Maple Theme](https://github.com/subframe7536/vscode-the
   lazy = false,
   priority = 1000,
   config = function()
+    -- Optional: configure before loading
+    -- require('mapledark').setup({ transparent = true })
+    vim.cmd.colorscheme('mapledark')
+  end,
+}
+```
+
+### With transparent background (lazy.nvim)
+
+```lua
+{
+  'abhilash26/mapledark.nvim',
+  lazy = false,
+  priority = 1000,
+  config = function()
+    require('mapledark').setup({
+      transparent = true,
+    })
     vim.cmd.colorscheme('mapledark')
   end,
 }

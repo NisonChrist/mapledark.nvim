@@ -5,7 +5,6 @@
 " This is a compatibility shim that loads the Lua version of the theme
 
 lua << EOF
-package.loaded['mapledark'] = nil
-package.loaded['mapledark.plugins'] = nil
-require('mapledark').setup()
+-- Don't clear package cache to preserve user config from setup()
+require('mapledark').load()
 EOF
