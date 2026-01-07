@@ -300,6 +300,35 @@ M.loaders.noice = function(c)
   hl('NoiceConfirmBorder', { fg = c.green, bg = bg_float })
 end
 
+-- NvimTree file explorer
+M.loaders.nvimtree = function(c)
+  hl('NvimTreeNormal', { fg = c.fg, bg = c.bg })
+  hl('NvimTreeNormalNC', { fg = c.fg, bg = c.bg })
+  hl('NvimTreeVertSplit', { fg = c.bg, bg = c.bg })
+  hl('NvimTreeWinSeparator', { fg = c.border, bg = c.bg })
+  hl('NvimTreeEndOfBuffer', { fg = c.bg })
+  hl('NvimTreeFolderIcon', { fg = c.blue })
+  hl('NvimTreeFolderName', { fg = c.blue })
+  hl('NvimTreeOpenedFolderName', { fg = c.blue, bold = true })
+  hl('NvimTreeEmptyFolderName', { fg = c.fg_dark })
+  hl('NvimTreeRootFolder', { fg = c.magenta, bold = true })
+  hl('NvimTreeSpecialFile', { fg = c.yellow, bold = true })
+  hl('NvimTreeImageFile', { fg = c.fg })
+  hl('NvimTreeIndentMarker', { fg = c.fg_dark })
+  hl('NvimTreeSymlink', { fg = c.cyan })
+  hl('NvimTreeGitDirty', { fg = c.orange })
+  hl('NvimTreeGitNew', { fg = c.green })
+  hl('NvimTreeGitDeleted', { fg = c.red })
+  hl('NvimTreeGitStaged', { fg = c.green })
+  hl('NvimTreeGitMerge', { fg = c.orange })
+  hl('NvimTreeGitRenamed', { fg = c.magenta })
+  hl('NvimTreeCursorLine', { bg = c.bg_visual })
+  hl('NvimTreeCursorColumn', { bg = c.bg_visual })
+  hl('NvimTreeOpenedFile', { fg = c.green, bold = true })
+  hl('NvimTreeModifiedFile', { fg = c.orange })
+  hl('NvimTreeExecFile', { fg = c.green, bold = true })
+end
+
 -- Main setup function - loads all or selected plugins
 function M.setup(c, plugins, plugins_loaded)
   -- If specific plugins list provided, only load those
