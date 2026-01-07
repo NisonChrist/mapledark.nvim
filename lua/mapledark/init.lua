@@ -30,6 +30,7 @@ local function get_colors()
     bg = '#1e1e1f',
     bg_light = '#333333',
     bg_sel = '#2a2a2b',
+    bg_visual = '#3d4f5f',  -- More visible selection color for visual mode
     border = '#858890',  -- Lightened to meet WCAG AA normal text contrast (≥4.5:1)
 
     -- Foreground colors
@@ -142,8 +143,8 @@ function M.setup(opts)
   hl('WinSeparator', { fg = c.border, bg = bg_main })
 
   -- Search and selection
-  hl('Visual', { bg = c.bg_sel })
-  hl('VisualNOS', { bg = c.bg_sel })
+  hl('Visual', { bg = c.bg_visual })
+  hl('VisualNOS', { bg = c.bg_visual })
   hl('Search', { fg = c.bg, bg = c.yellow, bold = true })
   hl('IncSearch', { fg = c.bg, bg = c.orange, bold = true })
   hl('CurSearch', { fg = c.bg, bg = c.orange_br, bold = true })
@@ -165,12 +166,12 @@ function M.setup(opts)
   -- Popup menu
   hl('Pmenu', { fg = c.fg, bg = bg_popup })
   hl('PmenuSel', { fg = c.bg, bg = c.blue, bold = true })
-  hl('PmenuKind', { fg = c.yellow, bg = c.bg_light })
+  hl('PmenuKind', { fg = c.yellow, bg = bg_popup })
   hl('PmenuKindSel', { fg = c.bg, bg = c.blue, bold = true })  -- Darker fg for AA compliance
-  hl('PmenuExtra', { fg = c.fg_dark, bg = c.bg_light })
+  hl('PmenuExtra', { fg = c.fg_dark, bg = bg_popup })
   hl('PmenuExtraSel', { fg = c.bg, bg = c.blue })  -- Darker fg for AA compliance
-  hl('PmenuSbar', { bg = c.bg_light })
-  hl('PmenuThumb', { fg = c.border, bg = c.bg_light })  -- Fixed for AA compliance
+  hl('PmenuSbar', { bg = bg_popup })
+  hl('PmenuThumb', { fg = c.border, bg = bg_popup })  -- Fixed for AA compliance
 
   -- Tabs
   hl('TabLine', { fg = c.fg_dark, bg = transparent and 'NONE' or c.bg_sel })
